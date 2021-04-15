@@ -24,7 +24,9 @@ export default defineConfig({
     'https://g.alicdn.com/hotline-client/hotline-client-sdk/1.0.0/hotline-client-ui/index.js',
   ],
   links: [
-    'https://g.alicdn.com/hotline-client/hotline-client-sdk/1.0.0/hotline-client-ui/index.css',
+    {href:'https://at.alicdn.com/t/font_1263869_rz6l63j0yrp.css',rel:"stylesheet"},
+    {href:'https://g.alicdn.com/code/lib/antd/4.14.0/antd.min.css',rel:"stylesheet"},
+    {href:'https://g.alicdn.com/hotline-client/hotline-client-sdk/1.0.0/hotline-client-ui/index.css',rel:"stylesheet"},
   ],
   layout: {
     // https://umijs.org/zh-CN/plugins/plugin-layout
