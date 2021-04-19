@@ -1,11 +1,12 @@
 import React from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
-import { Card, Alert, Typography } from 'antd';
+import { Card, Alert, Typography, Button } from 'antd';
 import { useIntl, FormattedMessage } from 'umi';
 import styles from './Welcome.less';
 
 // import SoftPhone from '@/components/SoftPhone';
-import NewSoftPhone from '@/components/newSoftPhone';
+// import NewSoftPhone from '@/components/newSoftPhone';
+import softPhoneApi from '@/components/NewSoftPhone-ins';
 
 const CodePreview: React.FC = ({ children }) => (
   <pre className={styles.pre}>
@@ -17,6 +18,23 @@ const CodePreview: React.FC = ({ children }) => (
 
 export default (): React.ReactNode => {
   const intl = useIntl();
+
+  const afterCallHangup = () => {
+    console.log('挂断');
+  };
+  const handleClick = () => {
+    console.log(11);
+
+    softPhoneApi
+      .doCallOut({
+        calleePhoneNumber: '10086',
+        afterCallHangup,
+      })
+      .then((value) => {
+        console.log('呼叫', value);
+      });
+  };
+
   return (
     <PageContainer>
       <Card>
@@ -63,7 +81,8 @@ export default (): React.ReactNode => {
       </Card>
 
       {/* <SoftPhone /> */}
-      <NewSoftPhone />
+      {/* <NewSoftPhone /> */}
+      <Button onClick={handleClick}>拨打电话</Button>
     </PageContainer>
   );
 };

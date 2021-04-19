@@ -43,7 +43,7 @@ export interface HotlineClient {
   /**
    * 注册事件监听
    */
-  on: (eventName: string, cb: (eventData: HotlineSocketEventData) => void) => Canceler;
+  on: (eventName: string, cb: (eventData: any) => void) => Canceler;
 
   // emit: (e: any,...t: any)=>{this._emitter.emit(e,...t)}
   // off: (e,t)=>{this._emitter.off(e,t)}
@@ -253,7 +253,6 @@ export interface Canceler {
   dispose: () => void; // 注销
 }
 
-
 export interface DailParams {
   calleePhoneNumber: string;
   AfterCallDial?: () => void; // 电话拨号成功后触发。
@@ -265,4 +264,121 @@ export interface DailParams {
  */
 export interface SoftPhoneApi {
   dail: (params: DailParams) => Promise<CallContext>;
+}
+
+/**
+ * 后端推送的事件。
+ */
+export interface HotlineSystemEvents<EventData> {
+  AgentCheckin: (data: EventData) => void; // 坐席签入
+  AgentReady: (data: EventData) => void; // 坐席进入空闲(在线)状态
+  AgentCallDialOut: (data: EventData) => void; // 坐席正在外呼事件
+  AgentJoinChannel: (data: EventData) => void; // RTC 建立，坐席加入聊天
+  AgentLeaveChannel: (data: EventData) => void; // RTC 断开，坐席离开聊天
+  AgentCheckout: (data: EventData) => void; // 坐席签出事件
+  AgentBreak: (data: EventData) => void; // 坐席小休事件
+  AgentAcw: (data: EventData) => void; // 坐席进入话后处理事件
+  AgentRinging: (data: EventData) => void; // 坐席振铃
+  // AgentCallRelease: (data: EventData) => void; // 通话结束,商业化场景暂时没有
+  AgentCallAnswerRequest: (data: EventData) => void; // FIXME: 待确认
+  AgentCallInboundEstablish: (data: EventData) => void; // 入呼通道建立事件
+  AgentCallOutBoundEstablish: (data: EventData) => void; // 外呼通道建立事件
+  AgentCallConferenceWaitAnswer: (data: EventData) => void; // 双步转等待第三方接听事件
+  AgentCallHeld: (data: EventData) => void; // 通话保持事件
+}
+
+export interface HotlineCustomEvents<EventData> {
+  AgentStatusChange: (data: EventData) => void; // 坐席状态变更事件
+  EnableStateChange: (data: HotlineClientEnableState) => void; // 使能类变更事件。
+  CallVoiceText: (data: EventData) => void; // 通话语音文本事件
+  AgentReconnect: (status: number) => void; // 坐席断线重连消息。
+  AgentCallReconnect: (status: number, callContext: CallContext) => void; // 通话断线重连消息。
+  BeforeCallHold: () => void; // 电话保持动作被触发前触发。
+  AfterCallHold: () => void; // 电话保持成功后触发。
+  BeforeCallDeflect: () => void; // 电话转交动作被触发前触发。
+  BeforeCallHangup: () => void; // 电话挂断动作被触发前触发。
+  AfterCallHangup: () => void; // 电话挂断成功后触发。
+  BeforeCallAnswer: () => void; // 电话接起动作被触发前触发。
+  AfterCallAnswer: () => void; // 电话接起成功后触发。
+  BeforeCallDial: () => void; // 电话拨号动作被触发前触发。
+  AfterCallDial: () => void; // 电话拨号成功后触发。
+  BeforeCallRetrieve: () => void; // 电话取回动作被触发前触发。
+  AfterCallRetrieve: () => void; // 电话取回成功后触发。
+  UnHandleEvent: (data: EventData) => void; // 异常兜底。
+  TokenExpired: () => void; // Token过期事件。
+  SystemCallRinging: (call: CallContext) => void; // 带话务上下文的系统振铃事件。
+  SystemCallDialOut: (call: CallContext) => void; // 带话务上下文的系统外呼事件。
+}
+
+export interface HotlineClientEnableState {
+  /**
+   * 状态。
+   */
+  status: number;
+
+  /**
+   * 可签出。
+   */
+  checkoutEnable: boolean;
+
+  /**
+   * 可签入。
+   */
+  checkinEnable: boolean;
+
+  /**
+   * 可空闲。(继续工作)
+   */
+  readyEnable: boolean;
+
+  /**
+   * 可小休。
+   */
+  breakEnable: boolean;
+
+  /**
+   * 可培训。
+   */
+  trainEnable: boolean;
+
+  /**
+   * 可接电话。
+   */
+  callAnswerEnable: boolean;
+
+  /**
+   * 可挂电话。
+   */
+  callHangupEnable: boolean;
+
+  /**
+   * 可拨号。
+   */
+  callDialEnable: boolean;
+
+  /**
+   * 电话可保持。
+   */
+  callHoldEnable: boolean;
+
+  /**
+   * 电话可取回。
+   *
+   * 保持 + 转接。
+   */
+  callRetrieveEnable: boolean;
+
+  /**
+   * 电话可转接。
+   */
+  callDeflectEnable: boolean;
+}
+
+export interface DeflectionIdentifier {
+  isSingleTransfer?: boolean; // true 是单步转，false 是双步转，默认是 true
+  isTransferSkillGroup?: boolean; // 是否转接给技能组。
+  isTransferPhone?: boolean; // 是否转接给电话号。
+  caller?: string; // 转接到电话的主叫号码。
+  callee?: string; // 转接到电话的被叫号码。
+  skillGroupId?: string; // 转接的技能组 id
 }
