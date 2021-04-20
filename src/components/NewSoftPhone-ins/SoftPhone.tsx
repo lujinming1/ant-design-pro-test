@@ -54,7 +54,15 @@ class SoftPhone extends PureComponent<SoftPhoneProps, SoftPhoneState> {
   }
 
   registerEvents = (clientContext: HotlineClient) => {
-    const unAfterCallHangup = clientContext.on('AfterCallHangup', () => {
+    // const unAfterCallHangup = clientContext.on('AfterCallHangup', () => {
+    //   console.log('挂断')
+    //   this.setState({ visible: false });
+    //   this.afterCallHangupCallback?.();
+    //   this.afterCallHangupCallback = undefined;
+    // });
+
+    const unAgentLeaveChannel = clientContext.on('AgentLeaveChannel', () => {
+      console.log('挂断AgentLeaveChannel')
       this.setState({ visible: false });
       this.afterCallHangupCallback?.();
       this.afterCallHangupCallback = undefined;
@@ -84,11 +92,12 @@ class SoftPhone extends PureComponent<SoftPhoneProps, SoftPhoneState> {
     });
 
     const unRegisters = [
-      unAfterCallHangup,
+      // unAfterCallHangup,
       unTokenExpired,
       unUnHandleEvent,
       unEnableStateChange,
       unAgentStatusChange,
+      unAgentLeaveChannel,
     ];
 
     return () => {
