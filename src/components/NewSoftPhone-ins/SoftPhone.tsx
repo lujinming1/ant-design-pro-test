@@ -154,13 +154,16 @@ class SoftPhone extends PureComponent<SoftPhoneProps, SoftPhoneState> {
 
   render() {
     return (
-      <div
-        className={styles.softPhoneWrap}
-        style={{ display: this.state.visible ? 'block' : 'none' }}
-        ref={this.contanierRef}
+      <Spin
+        wrapperClassName={styles.softPhoneWrap}
+        className={styles.loading}
+        spinning={this.state.loading}
       >
-        <Spin className={styles.loading} spinning={this.state.loading}></Spin>
-      </div>
+        <div
+          style={{ display: this.state.visible ? 'block' : 'none' }}
+          ref={this.contanierRef}
+        ></div>
+      </Spin>
     );
   }
 }
