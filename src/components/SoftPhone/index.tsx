@@ -154,10 +154,10 @@ xspaceHotline: "1"
       disableUI: false,
     });
     APIs.doCallOut({
-      number: '13884465237', // 要呼叫的号码
+      number: '10086', // 要呼叫的号码
       onSuccess: handleCallDialOutSuc, // 外呼成功接通后的回调，参数为通话信息对象
       param: {
-        number: '13884465237', // 要呼叫的号码
+        number: '10086', // 要呼叫的号码
         memberId: -1, // 必填, 匿名或未知用户可传 -1
         memberName: '匿名会员', // 必填，用户名称，未知可传 '匿名会员'
         // calloutNumber// 选填, 主叫号码，如未填则默认为配置的第一个

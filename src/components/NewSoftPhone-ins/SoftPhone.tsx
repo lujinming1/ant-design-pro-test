@@ -22,6 +22,7 @@ interface SoftPhoneState {
 
 export interface SoftPhoneProps {
   config: Pick<HotlineClientInitConfig, 'instanceId' | 'token'>;
+  callback: (instance: SoftPhoneInstance) => void;
 }
 
 export interface DoCallOutParams {
@@ -35,7 +36,7 @@ export interface SoftPhoneInstance {
 
 class SoftPhone extends PureComponent<SoftPhoneProps, SoftPhoneState> {
   static newSoftPhoneInstance: (
-    properties: SoftPhoneProps,
+    properties: Pick<SoftPhoneProps, 'config'>,
     callback: (instance: SoftPhoneInstance) => void,
   ) => void;
 
@@ -76,7 +77,19 @@ class SoftPhone extends PureComponent<SoftPhoneProps, SoftPhoneState> {
       },
     );
 
-    const unRegisters = [unAfterCallHangup, unTokenExpired, unUnHandleEvent, unEnableStateChange];
+    const unAgentStatusChange = clientContext.on('AgentStatusChange', (data) => {
+      console.log('坐席状态', data);
+      this.setState({ loading: false });
+      this.props.callback(this.getReturnInstance());
+    });
+
+    const unRegisters = [
+      unAfterCallHangup,
+      unTokenExpired,
+      unUnHandleEvent,
+      unEnableStateChange,
+      unAgentStatusChange,
+    ];
 
     return () => {
       unRegisters.map((item) => item.dispose());
@@ -95,13 +108,20 @@ class SoftPhone extends PureComponent<SoftPhoneProps, SoftPhoneState> {
     agent.checkIn();
   };
 
-  doCallOut = ({ calleePhoneNumber, afterCallHangup }: DoCallOutParams) => {
+  doCallOut = ({ calleePhoneNumber, afterCallHangup }: DoCallOutParams): Promise<CallContext> => {
     console.log(11);
+
     if (!this.enableState?.callDialEnable || !this.agentContext) return Promise.reject();
     this.afterCallHangupCallback = afterCallHangup;
     this.setState({ visible: true });
     return this.agentContext.dial(calleePhoneNumber);
   };
+
+  getReturnInstance = () => ({
+    doCallOut: (params: DoCallOutParams) => {
+      return this.doCallOut(params);
+    },
+  });
 
   componentDidMount() {
     console.log(123);
@@ -149,20 +169,7 @@ SoftPhone.newSoftPhoneInstance = (properties, callback) => {
   const div = document.createElement('div');
   document.body.appendChild(div);
 
-  let called = false;
-  function ref(softPhone: SoftPhone) {
-    if (called) {
-      return;
-    }
-    called = true;
-    callback({
-      doCallOut(params: DoCallOutParams) {
-        return softPhone.doCallOut(params);
-      },
-    });
-  }
-
-  ReactDOM.render(<SoftPhone {...properties} ref={ref} />, div);
+  ReactDOM.render(<SoftPhone config={properties.config} callback={callback} />, div);
 };
 
 export default SoftPhone;

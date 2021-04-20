@@ -137,6 +137,41 @@ const NewSoftPhone = () => {
       console.log('SystemCallDialOut', e);
     });
 
+    const unAgentStatusChange = clientContext.on('AgentStatusChange', (data) => {
+      console.log('坐席状态', data);
+      /*
+      const a = {
+        buId: 905,
+        content: '{}',
+        contentType: 'JSON',
+        departmentId: 10,
+        enumIconType: 'NORMAL',
+        enumSceneType: 'HOTLINECS',
+        gmtCreate: 1618885103971,
+        head: {
+          agentBasicCode: 'AgentReady',
+          agentBasicDesc: '坐席空闲状态',
+          aid: '63001',
+          appName: 'hotlinecs',
+          cmd: 'agentStatus',
+          departmentId: '10',
+          mid: '1618885166972',
+          name: 'xx',
+          supportNewFunction: '0',
+          time: '2021-04-20 10:18:23',
+          tk: '0088411250b3e665000000000000f5f1',
+          xspaceHotline: '1',
+        },
+        isPersistent: false,
+        sceneType: 'hotline-message',
+        senderId: 0,
+        senderType: '2',
+        userId: 63001,
+        uuid: '5cd30ae4-0ffb-4288-b56e-18136f91334c',
+      };
+      */
+    });
+
     return () => {
       unSystemCallDialOut?.dispose();
       unAfterCallHangup?.dispose();
@@ -147,6 +182,7 @@ const NewSoftPhone = () => {
       unAgentReconnect?.dispose();
       unAgentCallReconnect?.dispose();
       unUnHandleEvent?.dispose();
+      unAgentStatusChange?.dispose();
     };
   }, [clientRef.current]);
 
