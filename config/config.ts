@@ -14,6 +14,8 @@ export default defineConfig({
     hmr: true,
   },
   externals: {
+    react: 'window.React',
+    'react-dom': 'window.ReactDOM',
     HotlineClient: 'HotlineClientUi',
   },
   // headScripts: ['https://g.alicdn.com/xspace/phone/0.4.15/sdk.js'],
@@ -24,9 +26,13 @@ export default defineConfig({
     'https://g.alicdn.com/hotline-client/hotline-client-sdk/1.0.0/hotline-client-ui/index.js',
   ],
   links: [
-    {href:'https://at.alicdn.com/t/font_1263869_rz6l63j0yrp.css',rel:"stylesheet"},
-    {href:'https://g.alicdn.com/code/lib/antd/4.14.0/antd.min.css',rel:"stylesheet"},
-    {href:'https://g.alicdn.com/hotline-client/hotline-client-sdk/1.0.0/hotline-client-ui/index.css',rel:"stylesheet"},
+    { href: 'https://at.alicdn.com/t/font_1263869_rz6l63j0yrp.css', rel: 'stylesheet' },
+    { href: 'https://g.alicdn.com/code/lib/antd/4.14.0/antd.min.css', rel: 'stylesheet' },
+    {
+      href:
+        'https://g.alicdn.com/hotline-client/hotline-client-sdk/1.0.0/hotline-client-ui/index.css',
+      rel: 'stylesheet',
+    },
   ],
   layout: {
     // https://umijs.org/zh-CN/plugins/plugin-layout

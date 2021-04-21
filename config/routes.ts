@@ -28,6 +28,12 @@
     component: './SoftPhoneTest',
   },
   {
+    path: '/softPhone-test2',
+    name: 'softPhone2',
+    icon: 'smile',
+    component: './SoftPhoneTest2',
+  },
+  {
     path: '/admin',
     name: 'admin',
     icon: 'crown',
