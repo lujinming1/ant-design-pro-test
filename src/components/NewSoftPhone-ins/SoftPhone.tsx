@@ -22,7 +22,8 @@ interface SoftPhoneState {
 
 export interface SoftPhoneProps {
   config: Pick<HotlineClientInitConfig, 'instanceId' | 'token'>;
-  callback: (instance: SoftPhoneInstance) => void;
+  onTokenExpired: (updateToken: (newToken: string) => void) => void;
+  onSuccess: (instance: SoftPhoneInstance) => void;
 }
 
 export interface DoCallOutParams {
@@ -35,10 +36,7 @@ export interface SoftPhoneInstance {
 }
 
 class SoftPhone extends PureComponent<SoftPhoneProps, SoftPhoneState> {
-  static newSoftPhoneInstance: (
-    properties: Pick<SoftPhoneProps, 'config'>,
-    callback: (instance: SoftPhoneInstance) => void,
-  ) => void;
+  static newSoftPhoneInstance: (properties: SoftPhoneProps) => void;
 
   contanierRef: React.RefObject<HTMLDivElement>;
   clientContext: HotlineClient | undefined;
@@ -61,54 +59,43 @@ class SoftPhone extends PureComponent<SoftPhoneProps, SoftPhoneState> {
     //   this.afterCallHangupCallback = undefined;
     // });
 
-    const unAgentLeaveChannel = clientContext.on('AgentLeaveChannel', () => {
-      console.log('挂断AgentLeaveChannel')
+    clientContext.on('AgentLeaveChannel', () => {
+      console.log('挂断AgentLeaveChannel');
       this.setState({ visible: false });
       this.afterCallHangupCallback?.();
       this.afterCallHangupCallback = undefined;
     });
 
-    const unTokenExpired = clientContext.on('TokenExpired', () => {
+    clientContext.on('TokenExpired', () => {
       console.log('TokenExpired');
+      this.props.onTokenExpired(this.updateToken);
     });
 
-    const unUnHandleEvent = clientContext.on('UnHandleEvent', (event: HotlineSocketEventData) => {
+    clientContext.on('UnHandleEvent', (event: HotlineSocketEventData) => {
       console.log('UnHandleEvent', event);
     });
 
-    const unEnableStateChange = clientContext.on(
-      'EnableStateChange',
-      (data: HotlineClientEnableState) => {
-        console.log('EnableStateChange', data);
+    clientContext.on('EnableStateChange', (data: HotlineClientEnableState) => {
+      console.log('EnableStateChange', data);
 
-        this.enableState = data;
-      },
-    );
-
-    const unAgentStatusChange = clientContext.on('AgentStatusChange', (data) => {
-      console.log('坐席状态', data);
-      this.setState({ loading: false });
-      this.props.callback(this.getReturnInstance());
+      this.enableState = data;
     });
 
-    const unRegisters = [
-      // unAfterCallHangup,
-      unTokenExpired,
-      unUnHandleEvent,
-      unEnableStateChange,
-      unAgentStatusChange,
-      unAgentLeaveChannel,
-    ];
+    clientContext.on('AgentStatusChange', (data) => {
+      console.log('坐席状态', data);
+      this.setState({ loading: false });
+      this.props.onSuccess(this.getReturnInstance());
+    });
 
-    return () => {
-      unRegisters.map((item) => item.dispose());
-    };
+    clientContext.on('AgentCallOutBoundEstablish', (event: HotlineSocketEventData) => {
+      console.log('接听AgentCallOutBoundEstablish', event);
+    });
   };
 
   onClientOnline = (client: HotlineClient) => {
     console.log('client', client);
     this.clientContext = client;
-    this.unRegisters = this.registerEvents(client);
+    this.registerEvents(client);
   };
 
   onAgentOnline = (agent: AgentContext) => {
@@ -131,6 +118,11 @@ class SoftPhone extends PureComponent<SoftPhoneProps, SoftPhoneState> {
       return this.doCallOut(params);
     },
   });
+
+  updateToken = (newToken: string) => {
+    console.log('fsfdsfs');
+    this.clientContext?.updateToken(newToken);
+  };
 
   componentDidMount() {
     console.log(123);
@@ -158,7 +150,7 @@ class SoftPhone extends PureComponent<SoftPhoneProps, SoftPhoneState> {
   }
 
   componentWillUnmount() {
-    this.unRegisters?.();
+    this.clientContext?.removeAllListeners();
   }
 
   render() {
@@ -177,11 +169,18 @@ class SoftPhone extends PureComponent<SoftPhoneProps, SoftPhoneState> {
   }
 }
 
-SoftPhone.newSoftPhoneInstance = (properties, callback) => {
+SoftPhone.newSoftPhoneInstance = (properties) => {
   const div = document.createElement('div');
   document.body.appendChild(div);
 
-  ReactDOM.render(<SoftPhone config={properties.config} callback={callback} />, div);
+  ReactDOM.render(
+    <SoftPhone
+      config={properties.config}
+      onTokenExpired={properties.onTokenExpired}
+      onSuccess={properties.onSuccess}
+    />,
+    div,
+  );
 };
 
 export default SoftPhone;

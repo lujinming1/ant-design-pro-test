@@ -44,6 +44,8 @@ export interface HotlineClient {
    * 注册事件监听
    */
   on: (eventName: string, cb: (eventData: any) => void) => Canceler;
+  removeAllListeners: () => void;
+  updateToken: (newToken: string) => void;
 
   // emit: (e: any,...t: any)=>{this._emitter.emit(e,...t)}
   // off: (e,t)=>{this._emitter.off(e,t)}

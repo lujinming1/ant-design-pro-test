@@ -22,17 +22,15 @@ export default (): React.ReactNode => {
   const afterCallHangup = () => {
     console.log('挂断');
   };
-  const handleClick = () => {
+  const handleClick = async () => {
     console.log(11);
 
-    softPhoneApi
-      .doCallOut({
-        calleePhoneNumber: '10086',
-        afterCallHangup,
-      })
-      .then((value) => {
-        console.log('呼叫', value);
-      });
+    const callInfo = await softPhoneApi.doCallOut({
+      calleePhoneNumber: '10086',
+      afterCallHangup,
+    });
+
+    console.log('呼叫qq', callInfo);
   };
 
   return (

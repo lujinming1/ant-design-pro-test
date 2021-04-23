@@ -23,14 +23,14 @@ export default defineConfig({
     'https://g.alicdn.com/code/lib/react/17.0.0/umd/react.production.min.js',
     'https://g.alicdn.com/code/lib/react-dom/17.0.0/umd/react-dom.production.min.js',
     'https://g.alicdn.com/code/lib/antd/4.14.0/antd.min.js',
-    'https://g.alicdn.com/hotline-client/hotline-client-sdk/1.0.0/hotline-client-ui/index.js',
+    'https://g.alicdn.com/hotline-client/hotline-client-sdk/1.0.2/hotline-client-ui/index.js',
   ],
   links: [
     { href: 'https://at.alicdn.com/t/font_1263869_rz6l63j0yrp.css', rel: 'stylesheet' },
     { href: 'https://g.alicdn.com/code/lib/antd/4.14.0/antd.min.css', rel: 'stylesheet' },
     {
       href:
-        'https://g.alicdn.com/hotline-client/hotline-client-sdk/1.0.0/hotline-client-ui/index.css',
+        'https://g.alicdn.com/hotline-client/hotline-client-sdk/1.0.2/hotline-client-ui/index.css',
       rel: 'stylesheet',
     },
   ],
