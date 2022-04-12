@@ -49,14 +49,16 @@
     ],
   },
   {
+    path: '/sliceUpload',
+    name: '分批上传',
+    icon: 'smile',
+    component: './SliceUpload',
+  },
+  {
     name: 'list.table-list',
     icon: 'table',
     path: '/list',
     component: './TableList',
-  },
-  {
-    path: '/',
-    redirect: '/welcome',
   },
   {
     component: './404',
